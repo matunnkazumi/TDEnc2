@@ -1558,25 +1558,6 @@ tdeMuxMode()
   tdeEnc2mp4 "$1" "$2"
 }
 
-tdeToolUpdate()
-{
-  tdeEcho $auto_install_start{1,2}
-  if [ "${os}" = "Mac" ]; then
-    # for mac
-    [ -d "../Archives" ] || mkdir -p "../Archives" >/dev/null 2>&1
-    [ -s "../Archives/Mac.zip" ] || curl -o ../Archives/Mac.zip -L "https://raw.githubusercontent.com/tdenc/TDEnc2/master/Archives/Mac.zip"
-    if [ "$?" -eq 0 ]; then
-      tdeEchoS "${auto_install_end}"
-    else
-      tdeEcho $auto_install_error{1,2}
-      tdeError
-    fi
-    unzip -qjo ../Archives/Mac.zip 2>/dev/null
-    # TODO: for linux and windows
-  fi
-  chmod +x ${tool_ffmpeg} ${tool_x264} ${tool_MP4Box} ${tool_mediainfo}
-}
-
 # }}}
 
 ### Start TDEnc2 ### {{{
@@ -1639,7 +1620,6 @@ EOF
       cp -fpR TDEnc2-master/* ../
       chmod +x TDEnc2.sh ../TDEnc2.app/Contents/MacOS/droplet
       rm -rf TDEnc2-master >/dev/null 2>&1
-      tdeToolUpdate
       tdeEchoS "${update_end}"
       ./TDEnc2.sh "$@"
       exit
@@ -1648,11 +1628,6 @@ EOF
       echo "${latest_version}" > "${ver_txt}"
       ;;
   esac
-fi
-
-# auto-install tools
-if [ ! \( -e ${tool_ffmpeg} -a -e ${tool_x264} -a -e ${tool_mediainfo} \) ]; then
-  tdeToolUpdate
 fi
 
 # check tools, `which ${tool}` if necessary
@@ -1669,11 +1644,6 @@ if [ "$?" -eq 0 ]; then
 else
   tool_x264=$(which ${tool_x264} 2>/dev/null)
   [ -z "${tool_x264}" ] && tdeEcho $tool_error{1,2} && tdeError
-fi
-tool_x264_version=$(${tool_x264} --version | head -n1)
-if $(echo "${tool_x264_version}" | grep -ivq "${current_x264_version}"); then
-  rm ${tool_x264}
-  tdeToolUpdate
 fi
 ./${tool_MP4Box} -h >/dev/null 2>&1
 if [ "$?" -eq 0 ]; then
