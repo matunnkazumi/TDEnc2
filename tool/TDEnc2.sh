@@ -1381,7 +1381,7 @@ tdeAudioEncode()
   # silent
   if [ "${question_info[15]}" -eq 0 -o "${audio_info[0]}" -eq 0 ]; then
     ffmpeg_pcm="${ffmpeg_pcm} -ar 44100 -f s16le"
-    ffmpeg_aac="-profile aac_he ${ffmpeg_aac} -b:a 48k"
+    ffmpeg_aac="-profile:a aac_he ${ffmpeg_aac} -b:a 48k"
     ${tool_ffmpeg} ${ffmpeg_pcm} -i /dev/zero ${ffmpeg_aac} -t 1 "${temp_m4a}"
     return
   fi
@@ -1423,7 +1423,7 @@ tdeAudioEncode()
     else
       ffmpeg_profile="aac_low"
     fi
-    aac_option="-profile ${ffmpeg_profile} ${ffmpeg_aac} -b:a ${a_bitrate}k"
+    aac_option="-profile:a ${ffmpeg_profile} ${ffmpeg_aac} -b:a ${a_bitrate}k"
     if [ "${a_bitrate}" -lt $((128 * ${audio_surround})) ]; then
       cutoff_value=16000
     elif [ "${a_bitrate}" -lt $((224 * ${audio_surround})) ]; then
